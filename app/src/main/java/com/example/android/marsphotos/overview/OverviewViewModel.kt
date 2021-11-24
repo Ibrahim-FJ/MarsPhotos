@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.marsphotos.MarsApiService
+import com.example.android.marsphotos.MarsPhoto
 import com.example.android.marsphotos.network.MarsApi
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -29,6 +30,9 @@ import java.lang.Exception
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
 class OverviewViewModel : ViewModel() {
+    private val _photos = MutableLiveData<List<MarsPhoto>>()
+    val photos: LiveData<List<MarsPhoto>> = _photos
+
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<String>()
@@ -49,8 +53,8 @@ class OverviewViewModel : ViewModel() {
     private fun getMarsPhotos() {
         viewModelScope.launch {
             try {
-                _status.value = "Success: ${MarsApi.retrofitService.getPhoto().size} Mars photos retrieved"
-
+                _photos.value = MarsApi.retrofitService.getPhoto()
+                _status.value = "Success: Mars properties retrieved"
             }catch (e: Exception){
                _status.value = "Failure: ${e.message}"
             }
